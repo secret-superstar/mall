@@ -74,6 +74,15 @@ public class PmsProductController {
         return CommonResult.success(CommonPage.restPage(productList));
     }
 
+    public CommonResult<CommonPage<PmsProduct>> getList2(PmsProductQueryParam productQueryParam,
+                                                         @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
+                                                         @RequestParam(value = "pageSize", defaultValue = "1") Integer pageNum) {
+        //调用产品的查询方法
+        List<PmsProduct> productList = productService.list2(productQueryParam,pageSize, pageNum);
+        return CommonResult.success(CommonPage.restPage(productList));
+
+    }
+
     @ApiOperation("根据商品名称或货号模糊查询")
     @RequestMapping(value = "/simpleList", method = RequestMethod.GET)
     @ResponseBody

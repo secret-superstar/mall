@@ -80,7 +80,7 @@ public class PmsProductServiceImpl implements PmsProductService {
         //满减价格
         relateAndInsertList(productFullReductionDao, productParam.getProductFullReductionList(), productId);
         //处理sku的编码
-        handleSkuStockCode(productParam.getSkuStockList(),productId);
+        handleSkuStockCode(productParam.getSkuStockList(), productId);
         //添加sku库存信息
         relateAndInsertList(skuStockDao, productParam.getSkuStockList(), productId);
         //添加商品参数,添加自定义商品规格
@@ -94,10 +94,10 @@ public class PmsProductServiceImpl implements PmsProductService {
     }
 
     private void handleSkuStockCode(List<PmsSkuStock> skuStockList, Long productId) {
-        if(CollectionUtils.isEmpty(skuStockList))return;
-        for(int i=0;i<skuStockList.size();i++){
+        if (CollectionUtils.isEmpty(skuStockList)) return;
+        for (int i = 0; i < skuStockList.size(); i++) {
             PmsSkuStock skuStock = skuStockList.get(i);
-            if(StringUtils.isEmpty(skuStock.getSkuCode())){
+            if (StringUtils.isEmpty(skuStock.getSkuCode())) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
                 StringBuilder sb = new StringBuilder();
                 //日期
@@ -105,7 +105,7 @@ public class PmsProductServiceImpl implements PmsProductService {
                 //四位商品id
                 sb.append(String.format("%04d", productId));
                 //三位索引id
-                sb.append(String.format("%03d", i+1));
+                sb.append(String.format("%03d", i + 1));
                 skuStock.setSkuCode(sb.toString());
             }
         }
@@ -142,7 +142,7 @@ public class PmsProductServiceImpl implements PmsProductService {
         PmsSkuStockExample skuStockExample = new PmsSkuStockExample();
         skuStockExample.createCriteria().andProductIdEqualTo(id);
         skuStockMapper.deleteByExample(skuStockExample);
-        handleSkuStockCode(productParam.getSkuStockList(),id);
+        handleSkuStockCode(productParam.getSkuStockList(), id);
         relateAndInsertList(skuStockDao, productParam.getSkuStockList(), id);
         //修改商品参数,添加自定义商品规格
         PmsProductAttributeValueExample productAttributeValueExample = new PmsProductAttributeValueExample();
@@ -187,6 +187,38 @@ public class PmsProductServiceImpl implements PmsProductService {
         if (productQueryParam.getProductCategoryId() != null) {
             criteria.andProductCategoryIdEqualTo(productQueryParam.getProductCategoryId());
         }
+        return productMapper.selectByExample(productExample);
+    }
+
+    public List<PmsProduct> list2(PmsProductQueryParam productQueryParam, Integer pageSize, Integer pageNum) {
+
+        PageHelper.startPage(pageNum, pageSize);
+
+        PmsProductExample productExample = new PmsProductExample();
+        PmsProductExample.Criteria criteria = productExample.createCriteria();
+        criteria.andDeleteStatusEqualTo(0);
+
+        //对于查询条件的过滤处理
+        if (productQueryParam.getPublishStatus() != null) {
+            criteria.andPublishStatusEqualTo(productQueryParam.getPublishStatus());
+        }
+
+        if (productQueryParam.getVerifyStatus() != null) {
+            criteria.andVerifyStatusEqualTo(productQueryParam.getPublishStatus());
+        }
+
+        if (!StringUtils.isEmpty(productQueryParam.getKeyword())) {
+            criteria.andNameLike("%" + productQueryParam.getKeyword() + "%");
+        }
+
+        if (productQueryParam.getBrandId() != null) {
+            criteria.andBrandIdEqualTo(productQueryParam.getBrandId());
+        }
+
+        if (productQueryParam.getProductCategoryId() != null) {
+            criteria.andProductCategoryIdEqualTo(productQueryParam.getProductCategoryId());
+        }
+
         return productMapper.selectByExample(productExample);
     }
 
@@ -253,7 +285,7 @@ public class PmsProductServiceImpl implements PmsProductService {
         PmsProductExample productExample = new PmsProductExample();
         PmsProductExample.Criteria criteria = productExample.createCriteria();
         criteria.andDeleteStatusEqualTo(0);
-        if(!StringUtils.isEmpty(keyword)){
+        if (!StringUtils.isEmpty(keyword)) {
             criteria.andNameLike("%" + keyword + "%");
             productExample.or().andDeleteStatusEqualTo(0).andProductSnLike("%" + keyword + "%");
         }
