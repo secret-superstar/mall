@@ -6,20 +6,35 @@ package com.sp.practice.innerclasses;// innerclasses/Ex9.java
 */
 
 interface Ex9Interface {
-	void say(String s); 
+    void say(String s);
 }
 
-public class Ex9 {	
-	Ex9Interface f() {
-		class Inner implements Ex9Interface {
-			public void say(String s) {
-				System.out.println(s); 
-			}
-		}
-		return new Inner();
-	}
-	public static void main(String[] args) {
-		Ex9 x = new Ex9();
-		x.f().say("hi");
-	} 
+public class Ex9 {
+    Ex9Interface f() {
+        class Inner implements Ex9Interface {
+            public void say(String s) {
+                System.out.println(s);
+            }
+        }
+        return new Inner();
+    }
+
+    Ex9Interface f2() {
+
+        class Inner2 implements Ex9Interface {
+
+            @Override
+            public void say(String s) {
+                System.out.println(s);
+            }
+        }
+        return new Inner2();
+    }
+
+    public static void main(String[] args) {
+        Ex9 x = new Ex9();
+        x.f().say("hi");
+
+        x.f2().say("hi 2");
+    }
 }
