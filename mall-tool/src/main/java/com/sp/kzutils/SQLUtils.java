@@ -1,4 +1,4 @@
-package com.kuaizi.etl.common.util;
+package com.sp.kzutils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

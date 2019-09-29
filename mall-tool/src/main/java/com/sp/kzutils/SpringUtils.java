@@ -1,4 +1,4 @@
-package com.kuaizi.etl.common.util;
+package com.sp.kzutils;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

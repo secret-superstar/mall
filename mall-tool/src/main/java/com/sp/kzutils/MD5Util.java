@@ -1,4 +1,4 @@
-package com.kuaizi.etl.common.util;
+package com.sp.kzutils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

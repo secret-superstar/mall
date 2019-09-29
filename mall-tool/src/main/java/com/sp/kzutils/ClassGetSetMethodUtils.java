@@ -1,4 +1,4 @@
-package com.kuaizi.etl.common.util;
+package com.sp.kzutils;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
