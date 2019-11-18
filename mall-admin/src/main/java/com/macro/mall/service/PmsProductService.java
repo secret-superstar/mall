@@ -3,6 +3,7 @@ package com.macro.mall.service;
 import com.macro.mall.dto.PmsProductParam;
 import com.macro.mall.dto.PmsProductQueryParam;
 import com.macro.mall.dto.PmsProductResult;
+import com.macro.mall.dto.pms.PmsProductQueryParamDemo;
 import com.macro.mall.model.PmsProduct;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,7 +36,7 @@ public interface PmsProductService {
     /**
      * 分页查询商品
      */
-    List<PmsProduct> list(PmsProductQueryParam productQueryParam, Integer pageSize, Integer pageNum);
+    List<PmsProduct> list(PmsProductQueryParamDemo productQueryParam, Integer pageSize, Integer pageNum);
 
     /**
      * 分页查询商品

@@ -5,6 +5,7 @@ import com.macro.mall.dao.*;
 import com.macro.mall.dto.PmsProductParam;
 import com.macro.mall.dto.PmsProductQueryParam;
 import com.macro.mall.dto.PmsProductResult;
+import com.macro.mall.dto.pms.PmsProductQueryParamDemo;
 import com.macro.mall.mapper.*;
 import com.macro.mall.model.*;
 import com.macro.mall.service.PmsProductService;
@@ -64,34 +65,75 @@ public class PmsProductServiceImpl implements PmsProductService {
     @Autowired
     private PmsProductVertifyRecordDao productVertifyRecordDao;
 
+    /**
+     * 创建产品库的信息
+     *
+     * @param productParam
+     * @return
+     */
     @Override
     public int create(PmsProductParam productParam) {
-        int count;
-        //创建商品
+
+        int count = 0;
         PmsProduct product = productParam;
         product.setId(null);
         productMapper.insertSelective(product);
-        //根据促销类型设置价格：、阶梯价格、满减价格
+
+        //获取产品ID
         Long productId = product.getId();
-        //会员价格
+
+        //对于会员价的处理
         relateAndInsertList(memberPriceDao, productParam.getMemberPriceList(), productId);
+
         //阶梯价格
-        relateAndInsertList(productLadderDao, productParam.getProductLadderList(), productId);
+        relateAndInsertList(productLadderDao, productParam.getMemberPriceList(), productId);
+
         //满减价格
-        relateAndInsertList(productFullReductionDao, productParam.getProductFullReductionList(), productId);
-        //处理sku的编码
+        relateAndInsertList(productFullReductionDao, productParam.getMemberPriceList(), productId);
+
+        //处理SKU的编码情况
         handleSkuStockCode(productParam.getSkuStockList(), productId);
-        //添加sku库存信息
-        relateAndInsertList(skuStockDao, productParam.getSkuStockList(), productId);
-        //添加商品参数,添加自定义商品规格
+
+        //添加商品参数，天剑自定义商品规格
         relateAndInsertList(productAttributeValueDao, productParam.getProductAttributeValueList(), productId);
+
         //关联专题
         relateAndInsertList(subjectProductRelationDao, productParam.getSubjectProductRelationList(), productId);
+
         //关联优选
         relateAndInsertList(prefrenceAreaProductRelationDao, productParam.getPrefrenceAreaProductRelationList(), productId);
+
         count = 1;
-        return count;
+        return 0;
     }
+
+    //    public int create(PmsProductParam productParam) {
+//        int count;
+//        //创建商品
+//        PmsProduct product = productParam;
+//        product.setId(null);
+//        productMapper.insertSelective(product);
+//        //根据促销类型设置价格：、阶梯价格、满减价格
+//        Long productId = product.getId();
+//        //会员价格
+//        relateAndInsertList(memberPriceDao, productParam.getMemberPriceList(), productId);
+//        //阶梯价格
+//        relateAndInsertList(productLadderDao, productParam.getProductLadderList(), productId);
+//        //满减价格
+//        relateAndInsertList(productFullReductionDao, productParam.getProductFullReductionList(), productId);
+//        //处理sku的编码
+//        handleSkuStockCode(productParam.getSkuStockList(), productId);
+//        //添加sku库存信息
+//        relateAndInsertList(skuStockDao, productParam.getSkuStockList(), productId);
+//        //添加商品参数,添加自定义商品规格
+//        relateAndInsertList(productAttributeValueDao, productParam.getProductAttributeValueList(), productId);
+//        //关联专题
+//        relateAndInsertList(subjectProductRelationDao, productParam.getSubjectProductRelationList(), productId);
+//        //关联优选
+//        relateAndInsertList(prefrenceAreaProductRelationDao, productParam.getPrefrenceAreaProductRelationList(), productId);
+//        count = 1;
+//        return count;
+//    }
 
     private void handleSkuStockCode(List<PmsSkuStock> skuStockList, Long productId) {
         if (CollectionUtils.isEmpty(skuStockList)) return;
@@ -163,30 +205,48 @@ public class PmsProductServiceImpl implements PmsProductService {
         return count;
     }
 
+    /**
+     * 获取查询参数的列表信息
+     *
+     * @param productQueryParam
+     * @param pageSize
+     * @param pageNum
+     * @return
+     */
     @Override
-    public List<PmsProduct> list(PmsProductQueryParam productQueryParam, Integer pageSize, Integer pageNum) {
+    public List<PmsProduct> list(PmsProductQueryParamDemo productQueryParam, Integer pageSize, Integer pageNum) {
+
+        //分页的处理
+
         PageHelper.startPage(pageNum, pageSize);
         PmsProductExample productExample = new PmsProductExample();
         PmsProductExample.Criteria criteria = productExample.createCriteria();
         criteria.andDeleteStatusEqualTo(0);
+
         if (productQueryParam.getPublishStatus() != null) {
             criteria.andPublishStatusEqualTo(productQueryParam.getPublishStatus());
         }
+
         if (productQueryParam.getVerifyStatus() != null) {
             criteria.andVerifyStatusEqualTo(productQueryParam.getVerifyStatus());
         }
+
         if (!StringUtils.isEmpty(productQueryParam.getKeyword())) {
-            criteria.andNameLike("%" + productQueryParam.getKeyword() + "%");
+            criteria.andKeywordsLike("%" + productQueryParam.getKeyword() + "%");
         }
+
         if (!StringUtils.isEmpty(productQueryParam.getProductSn())) {
             criteria.andProductSnEqualTo(productQueryParam.getProductSn());
         }
-        if (productQueryParam.getBrandId() != null) {
-            criteria.andBrandIdEqualTo(productQueryParam.getBrandId());
-        }
+
         if (productQueryParam.getProductCategoryId() != null) {
             criteria.andProductCategoryIdEqualTo(productQueryParam.getProductCategoryId());
         }
+
+        if (productQueryParam.getBrandId() != null) {
+            criteria.andBrandIdEqualTo(productQueryParam.getBrandId());
+        }
+
         return productMapper.selectByExample(productExample);
     }
 

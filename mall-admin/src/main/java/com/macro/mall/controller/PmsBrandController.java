@@ -84,10 +84,10 @@ public class PmsBrandController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
     @PreAuthorize("hasAuthority('pms:brand:read')")
-    public CommonResult<CommonPage<PmsBrand>> getList(@RequestParam(value = "keyword", required = false) String keyword,
+    public CommonResult<CommonPage<PmsBrand>> getList(@RequestParam(value = "keyword") String keyword,
                                                       @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                                                       @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize) {
-        List<PmsBrand> brandList = brandService.listBrand(keyword, pageNum, pageSize);
+          List<PmsBrand> brandList = brandService.listBrand(keyword, pageNum, pageSize);
         return CommonResult.success(CommonPage.restPage(brandList));
     }
 
